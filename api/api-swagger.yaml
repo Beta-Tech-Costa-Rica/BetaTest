@@ -8,6 +8,8 @@ servers:
 tags:
 - name: login
   description: This endpoint handles the user login to get a JWT.
+- name: signup
+  description: This endpoint handles the user registration.
 - name: person
   description: This endpoint handles all information related to people.
   
@@ -34,6 +36,29 @@ paths:
           $ref: '#/components/responses/BadRequest'
         403:
           description: Error with email or password.
+          
+  /signup:
+    post:
+      tags:
+      - signup
+      summary:  Sign up with an email and password to then be able to login and get a JWT.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyLogin'
+        required: true
+      responses:
+        200:
+          description: (OK) Sign up successful.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/SuccessSignup'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          description: Error email is already registered.
           
   /person:
     post:
@@ -178,6 +203,10 @@ components:
         accessToken:
           type: string
           description: Json Web Token.
+          
+    SuccessSignup:
+      type: string
+      description: User registered successfully.
           
           
   securitySchemes:

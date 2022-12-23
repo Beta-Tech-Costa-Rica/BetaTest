@@ -25,9 +25,9 @@ appDataSource.initialize()
           async (req: Request, res: Response, next: Function) => {
             try {
                 //If there's errors with the validations in a route it returns an error message, otherwise it continues with the user's request
-                const errors = validationResult(req);
+                var errors = validationResult(req);
                 if (!errors.isEmpty()) {
-                    return res.status(400).send("Error missing data");
+                    return res.status(400).send(errors.array()[0].msg);
                 }
         
                 const result = await (new (route.controller as any))[route.action](req, res);

@@ -1,5 +1,5 @@
 import { PersonController } from "./controllers/PersonController";
-import { AuthController } from "./controllers/AuthController";
+import { AccountController } from "./controllers/AccountController";
 import { authenticateToken, pass } from "./middleware/authMiddleware"
 import { body, param } from "express-validator";
 
@@ -11,8 +11,8 @@ export const Routes = [{
     action: "addPerson",
     auth: authenticateToken,
     validation: [
-        body('firstName').isString(),
-        body('lastName').isString(),
+        body('firstName').isString().isLength({ min: 1, max: 25 }),
+        body('lastName').isString().isLength({ min: 1, max: 25 }),
         body('age').isInt({ min: 0 }).withMessage('Age must be 0 or greater'),
     ],
 }, {
@@ -23,8 +23,8 @@ export const Routes = [{
     auth: authenticateToken,
     validation: [
         param('id').isInt(),
-        body('firstName').isString(),
-        body('lastName').isString(),
+        body('firstName').isString().isLength({ min: 1, max: 25 }),
+        body('lastName').isString().isLength({ min: 1, max: 25 }),
         body('age').isInt({ min: 0 }).withMessage('Age must be 0 or greater'),
     ],
 }, {
@@ -39,11 +39,21 @@ export const Routes = [{
 }, {
     method: "post",
     route: "/login",
-    controller: AuthController,
+    controller: AccountController,
     action: "login",
     auth: pass,
     validation: [
         body('email').isEmail(),
         body('password').isString(),
     ],
-}]
+}, {
+    method: "post",
+    route: "/signup",
+    controller: AccountController,
+    action: "signup",
+    auth: pass,
+    validation: [
+        body('email').isEmail(),
+        body('password', 'Password length must be between 8 and 24 characters long').isString().isLength({ min: 8, max: 24 }),
+    ],
+},]

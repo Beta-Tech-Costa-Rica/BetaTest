@@ -3,7 +3,7 @@ import { appDataSource } from "../dataSource"
 import { User } from "../entity/user"
 import { secretToken, jwt, bcrypt } from "../config"
 
-export class AuthController {
+export class AccountController {
 
     private userRepository = appDataSource.getRepository(User);
 
@@ -28,6 +28,16 @@ export class AuthController {
             
         } catch (err) {
             res.status(403).send("Error with email or password")
+        }
+    }
+
+    async signup (req: Request, res: Response) {
+        try{
+            const user = await this.userRepository.create(req.body)
+            await this.userRepository.save(user);
+            res.status(200).send("User registered successfully")
+        } catch (err) {
+            res.status(403).send("Error email is already registered")
         }
     }
 
