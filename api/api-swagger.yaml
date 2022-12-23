@@ -1,0 +1,187 @@
+openapi: 3.0.3
+info:
+  title: API BetaTest
+  description: API to manage people.
+  version: 1.0.0
+servers:
+- url: http://localhost:3000/
+tags:
+- name: login
+  description: This endpoint handles the user login to get a JWT.
+- name: person
+  description: This endpoint handles all information related to people.
+  
+paths:
+  /login:
+    post:
+      tags:
+      - login
+      summary:  Log in with a valid username and password to get a JWT. If the login is successful the accessToken value obtained can be use to authorize the user to make requests from the other endpoints. Default user email=> admin@email.com - default user password=> password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyLogin'
+        required: true
+      responses:
+        200:
+          description: (OK) Log in successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessLogin'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          description: Error with email or password.
+          
+  /person:
+    post:
+      tags:
+      - person
+      summary:  Add a new person to the database.
+      security:
+        - JWT: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyPerson'
+        required: true
+      responses:
+        200:
+          description: (OK) A person has been added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unathorized'
+          
+  /person/{id}:
+    put:
+      tags:
+      - person
+      summary:  Add a new person to the database.
+      parameters:
+      - $ref: "#/components/parameters/id"
+      security:
+        - JWT: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyPerson'
+        required: true
+      responses:
+        200:
+          description: (OK) A person has been updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unathorized'
+          
+    delete:
+      tags:
+      - person
+      summary:  Add a new person to the database.
+      parameters:
+      - $ref: "#/components/parameters/id"
+      security:
+        - JWT: []
+      responses:
+        200:
+          description: (OK) Person deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessDelete'
+        401:
+          $ref: '#/components/responses/Unathorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+          
+components:
+  responses:
+    Unathorized:
+      description: (Unathorized) The user has no authorization.
+    BadRequest:
+      description: (Bad Request) Data sent has errors.
+    NotFound:
+      description: (Not Found) Data couldn't be found.
+  
+  parameters:
+    id:
+      name: id
+      in: path
+      schema:
+        type: integer
+      description: Person id.
+      required: true
+        
+  schemas:
+    BodyLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Email of the user.
+        password:
+          type: string
+          description: Password of the user.
+          
+    BodyPerson:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: First name of the person.
+        lastName:
+          type: string
+          description: Last name of the person.
+        age:
+          type: integer
+          description: Age of the person (>=0).
+          
+    Success:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Id of the person added.
+        firstName:
+          type: string
+          description: First name of the person.
+        lastName:
+          type: string
+          description: Last name of the person.
+        age:
+          type: integer
+          description: Age of the person (>=0).
+          
+    SuccessDelete:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Person deleted.
+          
+    SuccessLogin:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: Json Web Token.
+          
+          
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

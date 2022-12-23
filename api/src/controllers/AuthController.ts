@@ -7,6 +7,12 @@ export class AuthController {
 
     private userRepository = appDataSource.getRepository(User);
 
+    /**
+     * Function that tries to log in a user using email and password.
+     * If the user data is correct it returns a Json web token that the user can use to make requests from endpoints that need authentication
+     * @param req request that has the user email and password on its body 
+     * @param res http response that has a JWT on sucessful log in
+     */
     async login (req: Request, res: Response) {
         try{
             const user = await this.userRepository.findOneBy({
@@ -21,7 +27,7 @@ export class AuthController {
             }
             
         } catch (err) {
-            res.status(400).send("Error missing data")
+            res.status(403).send("Error with email or password")
         }
     }
 
